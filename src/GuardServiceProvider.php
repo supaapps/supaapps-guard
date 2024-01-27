@@ -20,7 +20,6 @@ class GuardServiceProvider extends ServiceProvider
                 __DIR__ . '/../config/supaapps-guard.php'
                     => config_path('supaapps-guard.php'),
             ]);
-            $this->registerCommands();
         }
 
         Auth::extend('supaapps-guard', function (Application $app, string $name, array $config) {
