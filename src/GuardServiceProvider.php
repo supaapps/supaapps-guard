@@ -29,6 +29,13 @@ class GuardServiceProvider extends ServiceProvider
         });
     }
 
+    /**
+     * Register any package services.
+     */
+    public function register(): void
+    {
+        $this->mergeConfigFrom(__DIR__ . '/../config/sguard.php', 'sguard');
+    }
 
 
 }
