@@ -20,7 +20,7 @@ env vars:
 
     'guards' => [
         'jwt' => [
-            'driver' => 'supaapps-jwt',
+            'driver' => 'supaapps-guard',
             'provider' => 'users',
         ],
     ],
@@ -28,7 +28,7 @@ env vars:
 ```
 
 
-###
+### example route
 
 ```php
 
