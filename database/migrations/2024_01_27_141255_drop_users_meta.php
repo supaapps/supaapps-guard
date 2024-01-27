@@ -15,7 +15,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (\Illuminate\Support\Facades\DB::count('users') > 0) {
+        if(\Illuminate\Support\Facades\DB::table('users')->count() > 0) {
             throw new Exception('Table users is not empty');
         }
         Schema::table('users', function (Blueprint $table) {
