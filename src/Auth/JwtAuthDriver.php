@@ -134,7 +134,7 @@ class JwtAuthDriver implements Guard
                 return $this->fetchAlgo();
             });
             $this->jwtPayload = JWT::decode($bearerToken, new Key(trim($publicKey), trim($algorithm)));
-            if ( config('supaappsjwt.realm') !== $this->jwtPayload->aud) {
+            if ( config('sguard.realm_name') !== $this->jwtPayload->aud) {
                 throw new AuthenticationException('Auth error - realm mismatch');
             }
             $this->firstName = $this->jwtPayload->first_name;
