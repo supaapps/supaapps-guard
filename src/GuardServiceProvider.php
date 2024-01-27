@@ -17,8 +17,8 @@ class GuardServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
             $this->publishes([
-                __DIR__ . '/../config/supaapps-guard.php'
-                    => config_path('supaapps-guard.php'),
+                __DIR__ . '/../config/sguard.php'
+                    => config_path('sguard.php'),
             ]);
         }
 
