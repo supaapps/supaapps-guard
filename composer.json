@@ -29,7 +29,8 @@
         }
     },
     "require-dev": {
-        "orchestra/testbench": "^8.21"
+        "orchestra/testbench": "^8.21",
+        "nunomaduro/collision": "^7.8"
     },
     "autoload-dev": {
         "psr-4": {
@@ -56,7 +57,7 @@
             "@php vendor/bin/phpstan analyse"
         ],
         "test": [
-            "@php vendor/bin/phpunit"
+            "@php vendor/bin/testbench package:test"
         ]
     }
 }

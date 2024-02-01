@@ -2,6 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /*
@@ -15,10 +17,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if(\Illuminate\Support\Facades\DB::table('users')->count() > 0) {
+        if (DB::table('users')->count() > 0) {
             throw new Exception('Table users is not empty');
         }
         Schema::table('users', function (Blueprint $table) {
+            $indexes = Arr::pluck(Schema::getIndexes('users'), 'name');
+
+            if (in_array('users_email_unique', $indexes)) {
+                $table->dropUnique('users_email_unique');
+            }
+
             $table->dropColumn([
                 'name',
                 'email',

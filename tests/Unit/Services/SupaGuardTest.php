@@ -2,16 +2,15 @@
 
 namespace Tests\Unit\Services;
 
+use Illuminate\Foundation\Auth\User;
 use Supaapps\Guard\Services\SupaGuard;
 use Tests\TestCase;
-
-use function PHPUnit\Framework\assertTrue;
 
 class SupaGuardTest extends TestCase
 {
     public function testCanBeActingAsAUser(): void
     {
-        $this->assertTrue(true);
+        // dd(User::first());
         // SupaGuard::actingAs();
     }
 }
