@@ -130,6 +130,8 @@ class JwtAuthDriver implements Guard
             $publicKey = Cache::remember('supaapps_jwt/public_key', 600, function () {
                 return $this->fetchPublicKey();
             });
+
+            dd($publicKey);
             $algorithm = Cache::remember('supaapps_jwt/algo', 600, function () {
                 return $this->fetchAlgo();
             });
