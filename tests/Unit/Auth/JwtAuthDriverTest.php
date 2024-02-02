@@ -22,13 +22,7 @@ class JwtAuthDriverTest extends TestCase
             );
         }
 
-        $accessToken = $this->generateTestingJwtToken([
-            'sub' => $user->id
-        ]);
-
-        request()->headers->add([
-            'Authorization' => "Bearer {$accessToken}"
-        ]);
+        $this->withAccessTokenFor($user);
 
         $this->assertTrue(auth()->check());
         $this->assertEquals(1, auth()->user()?->id);
