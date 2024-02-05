@@ -101,7 +101,7 @@ class JwtAuthDriver implements Guard
      */
     public function fetchPublicKey()
     {
-        $url = trim(config('sguard.auth_server_url'),'/') . '/keys/public_key';
+        $url = rtrim(config('sguard.auth_server_url'),'/') . '/keys/public_key';
         return file_get_contents($url);
     }
 
@@ -110,7 +110,7 @@ class JwtAuthDriver implements Guard
      */
     public function fetchAlgo()
     {
-        $url = trim(config('sguard.auth_server_url'),'/') . '/keys/algo';
+        $url = rtrim(config('sguard.auth_server_url'),'/') . '/keys/algo';
         return file_get_contents($url);
     }
 
@@ -130,6 +130,7 @@ class JwtAuthDriver implements Guard
             $publicKey = Cache::remember('supaapps_jwt/public_key', 600, function () {
                 return $this->fetchPublicKey();
             });
+
             $algorithm = Cache::remember('supaapps_jwt/algo', 600, function () {
                 return $this->fetchAlgo();
             });
