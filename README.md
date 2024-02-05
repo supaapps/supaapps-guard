@@ -21,7 +21,7 @@ add env vars to your `.evn`:
 
 ### Add new custom guard
 
-On `config/auth.php` add following lines
+On `config/auth.php` add the new guard
 
 ```php
 'guards' => [
@@ -32,6 +32,14 @@ On `config/auth.php` add following lines
 ],
 ```
 
+Also, set the default guard to `jwt`
+
+```php
+'defaults' => [
+    'guard' => 'jwt',
+    ...
+```
+
 ## Usage example
 
 on `routes/api.php`, add following lines
@@ -40,14 +48,16 @@ on `routes/api.php`, add following lines
 Route::middleware('auth:jwt')->get('/user', function (Request $request) {
     return [
         $request->user(),
-        auth('jwt')->firstName(),
-        auth('jwt')->lastName(),
-        auth('jwt')->email(),
-        auth('jwt')->scopes(),
-        auth('jwt')->scopesArray(),
+        auth()->firstName(),
+        auth()->lastName(),
+        auth()->email(),
+        auth()->scopes(),
+        auth()->scopesArray(),
     ];
 });
 ```
+
+*note*: `auth()` uses the default drive by default. If you didn't set the `jwt` as default driver then you need to call `auth('jwt')` on the previous usage example
 
 ## Testing
 
