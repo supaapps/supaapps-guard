@@ -12,7 +12,7 @@
 
 ### ENV vars
 
-add env vars to your `.evn`:
+add env vars to your `.env`:
 
 ```env
 `SUPAAPPS_GUARD_AUTH_SERVER_URL=http://example.com`
