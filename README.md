@@ -61,7 +61,7 @@ Route::middleware('auth:jwt')->get('/user', function (Request $request) {
 
 ## Testing
 
-You can generate JWT token for testing. It will be generated with [private_key](./tests/keys/private_key) from tests folder. And will be compared with `public_key` on same folder as well. **example**
+You can generate JWT token for testing. It will be generated with [private_key](./tests/public/private_key) from tests folder. And will be compared with `public_key` on same folder as well. **example**
 
 ```php
 use Tests\TestCase;

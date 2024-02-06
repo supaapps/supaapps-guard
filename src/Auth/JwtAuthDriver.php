@@ -11,6 +11,7 @@ use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use stdClass;
+use Throwable;
 
 /**
  *
@@ -117,17 +118,22 @@ class JwtAuthDriver implements Guard
     /**
      * @return array
      */
-    public function fetchRevokedTokens()
+    public function fetchRevokedTokens(): array
     {
-        $url = rtrim(config('sguard.auth_server_url'),'/') . '/public/revoked_ids';
-        return json_decode(file_get_contents($url));
+        try {
+            $url = rtrim(config('sguard.auth_server_url'),'/') . '/public/revoked_ids';
+            return json_decode(file_get_contents($url));
+        } catch (Throwable $e) {
+            return [];
+        }
     }
 
     /**
      * Validate a token signature
      *
-     * @param  array  $credentials
+     * @param array $credentials
      * @return bool
+     * @throws AuthenticationException
      */
     public function validate(array $credentials = [])
     {
@@ -164,7 +170,7 @@ class JwtAuthDriver implements Guard
                 $this->admin = false;
             }
 
-        } catch (\Throwable $ex) {
+        } catch (Throwable $ex) {
             throw new AuthenticationException('Auth error - ' . $ex->getMessage());
         }
 
