@@ -1,0 +1,31 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+
+    tags:
+      - v*
+
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "8.1"
+      - uses: "ramsey/composer-install@v2"
+
+      - name: Run PHPCS
+        run: |
+          composer run-script lint
+
+      - name: Run tests
+        run: |
+          composer run-script test
