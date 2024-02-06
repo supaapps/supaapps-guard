@@ -5,6 +5,7 @@
   - [Add new custom guard](#add-new-custom-guard)
 - [Usage example](#usage-example)
 - [Testing](#testing)
+  - [HTTP testing](#http-testing)
 
 ## Installation
 
@@ -73,12 +74,62 @@ class CustomTest extends TestCase
 
     public function testThatIAmActingAsUser(): void
     {
-        $user = User::create();
+        $user = User::factory()->create();
 
         $this->withAccessTokenFor($user);
 
         $this->assertTrue(auth('jwt')->check());
         $this->assertTrue($user->id, auth('jwt')->id());
+    }
+}
+```
+
+### HTTP testing
+
+`withAccessTokenFor` method is adding the `Bearer` token to `headers` which are sent by http tests. But you need to specify the server url somewhere on your tests. eg. `tests/CreatesApplication`:
+
+```php
+<?php
+use Supaapps\Guard\Tests\Concerns\GenerateJwtToken;
+
+trait CreatesApplication
+{
+    use GenerateJwtToken;
+
+    public function createApplication(): Application
+    {
+        ...
+
+        $this->setAuthServerUrl();
+        return $app;
+    }
+}
+```
+
+Next run your http tests, for example:
+
+```php
+<?php
+
+namespace Tests\Feature;
+
+use Tests\TestCase;
+
+class CustomTest extends TestCase
+{
+    public function itReturnsTheAuthUser(): void
+    {
+        $user = User::factory()->create();
+
+        $this->withAccessTokenFor($user);
+
+        // assume you have /user endpoint that
+        // - uses auth:jwt middleware
+        // - and returns auth user
+        $response = $this->getJson('/user');
+
+        $response->assertOk()
+            ->assertJson($user->toArray());
     }
 }
 ```
