@@ -36,6 +36,4 @@ class GuardServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/sguard.php', 'sguard');
     }
-
-
 }

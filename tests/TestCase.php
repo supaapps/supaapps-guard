@@ -11,7 +11,8 @@ use function Orchestra\Testbench\laravel_migration_path;
 
 class TestCase extends BaseTestCase
 {
-    use RefreshDatabase, GenerateJwtToken;
+    use RefreshDatabase;
+    use GenerateJwtToken;
 
     protected function getPackageProviders($app)
     {
