@@ -16,8 +16,8 @@
 add env vars to your `.env`:
 
 ```env
-`SUPAAPPS_GUARD_AUTH_SERVER_URL=http://example.com`
-`SUPAAPPS_GUARD_AUTH_REALM_NAME=myapp`
+SUPAAPPS_GUARD_AUTH_SERVER_URL=http://example.com
+SUPAAPPS_GUARD_AUTH_REALM_NAME=myapp
 ```
 
 ### Add new custom guard
