@@ -82,17 +82,25 @@ class JwtAuthDriver implements Guard
      */
     public function user()
     {
-        $this->validate();
-
-        if ($user = $this->provider->retrieveById($this->jwtPayload->sub)) {
-            return $user;
+        if (!$this->validate()) {
+            return null;
         }
 
-        return $this->provider
-            ->createModel()
-            ->create([
-                'id' => $this->jwtPayload->sub,
-            ]);
+        if (!is_null($this->user)) {
+            return $this->user;
+        }
+
+        // retrieve user from db or create a new user by id
+        if (is_null($user = $this->provider->retrieveById($this->jwtPayload->sub))) {
+            $user = $this->provider
+                ->createModel()
+                ->create([
+                    'id' => $this->jwtPayload->sub,
+                ]);
+        }
+
+        $this->setUser($user);
+        return $user;
     }
 
 
@@ -120,10 +128,10 @@ class JwtAuthDriver implements Guard
      * @param  array  $credentials
      * @return bool
      */
-    public function validate(array $credentials = [])
+    public function validate(array $credentials = []): bool
     {
         if (is_null($bearerToken = $this->request->bearerToken())) {
-            throw new AuthenticationException("A valid bearer token is required");
+            return false;
         }
 
         try {
@@ -152,8 +160,7 @@ class JwtAuthDriver implements Guard
         } catch (\Throwable $ex) {
             throw new AuthenticationException('Auth error - ' . $ex->getMessage());
         }
-
-
+        
         return true;
     }
 
