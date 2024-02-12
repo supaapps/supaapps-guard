@@ -11,6 +11,7 @@ use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use stdClass;
+use Throwable;
 
 class JwtAuthDriver implements Guard
 {
@@ -79,17 +80,25 @@ class JwtAuthDriver implements Guard
      */
     public function user()
     {
-        $this->validate();
-
-        if ($user = $this->provider->retrieveById($this->jwtPayload->sub)) {
-            return $user;
+        if (!$this->validate()) {
+            return null;
         }
 
-        return $this->provider
-            ->createModel()
-            ->create([
-                'id' => $this->jwtPayload->sub,
-            ]);
+        if (!is_null($this->user)) {
+            return $this->user;
+        }
+
+        // retrieve user from db or create a new user by id
+        if (is_null($user = $this->provider->retrieveById($this->jwtPayload->sub))) {
+            $user = $this->provider
+                ->createModel()
+                ->create([
+                    'id' => $this->jwtPayload->sub,
+                ]);
+        }
+
+        $this->setUser($user);
+        return $user;
     }
 
 
@@ -98,7 +107,7 @@ class JwtAuthDriver implements Guard
      */
     public function fetchPublicKey()
     {
-        $url = rtrim(config('sguard.auth_server_url'), '/') . '/keys/public_key';
+        $url = rtrim(config('sguard.auth_server_url'),'/') . '/public/public_key';
         return file_get_contents($url);
     }
 
@@ -107,20 +116,34 @@ class JwtAuthDriver implements Guard
      */
     public function fetchAlgo()
     {
-        $url = rtrim(config('sguard.auth_server_url'), '/') . '/keys/algo';
+        $url = rtrim(config('sguard.auth_server_url'),'/') . '/public/algo';
         return file_get_contents($url);
+    }
+
+    /**
+     * @return array
+     */
+    public function fetchRevokedTokens(): array
+    {
+        try {
+            $url = rtrim(config('sguard.auth_server_url'),'/') . '/public/revoked_ids';
+            return json_decode(file_get_contents($url));
+        } catch (Throwable $e) {
+            return [];
+        }
     }
 
     /**
      * Validate a token signature
      *
-     * @param  array  $credentials
+     * @param array $credentials
      * @return bool
+     * @throws AuthenticationException
      */
-    public function validate(array $credentials = [])
+    public function validate(array $credentials = []): bool
     {
         if (is_null($bearerToken = $this->request->bearerToken())) {
-            throw new AuthenticationException("A valid bearer token is required");
+            return false;
         }
 
         try {
@@ -135,6 +158,12 @@ class JwtAuthDriver implements Guard
             if (config('sguard.realm_name') !== $this->jwtPayload->aud) {
                 throw new AuthenticationException('Auth error - realm mismatch');
             }
+            $revokedIds = Cache::remember('supaapps_jwt/revoked_ids', 15, function () {
+                return $this->fetchRevokedTokens();
+            });
+            if (in_array($this->jwtPayload->id, $revokedIds)) {
+                throw new AuthenticationException('access token has been revoked');
+            }
             $this->firstName = $this->jwtPayload->first_name;
             $this->lastName = $this->jwtPayload->last_name;
             $this->email = $this->jwtPayload->email;
@@ -145,7 +174,8 @@ class JwtAuthDriver implements Guard
             } else {
                 $this->admin = false;
             }
-        } catch (\Throwable $ex) {
+
+        } catch (Throwable $ex) {
             throw new AuthenticationException('Auth error - ' . $ex->getMessage());
         }
 

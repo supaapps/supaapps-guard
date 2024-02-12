@@ -44,8 +44,8 @@ trait GenerateJwtToken
 
         return JWT::encode(
             $payload,
-            File::get(__DIR__ . '/../../../tests/keys/private_key'),
-            File::get(__DIR__ . '/../../../tests/keys/algo')
+            File::get(__DIR__ . '/../../../tests/public/private_key'),
+            File::get(__DIR__ . '/../../../tests/public/algo')
         );
     }
 
