@@ -107,7 +107,7 @@ class JwtAuthDriver implements Guard
      */
     public function fetchPublicKey()
     {
-        $url = rtrim(config('sguard.auth_server_url'),'/') . '/public/public_key';
+        $url = rtrim(config('sguard.auth_server_url'), '/') . '/public/public_key';
         return file_get_contents($url);
     }
 
@@ -116,7 +116,7 @@ class JwtAuthDriver implements Guard
      */
     public function fetchAlgo()
     {
-        $url = rtrim(config('sguard.auth_server_url'),'/') . '/public/algo';
+        $url = rtrim(config('sguard.auth_server_url'), '/') . '/public/algo';
         return file_get_contents($url);
     }
 
@@ -126,7 +126,7 @@ class JwtAuthDriver implements Guard
     public function fetchRevokedTokens(): array
     {
         try {
-            $url = rtrim(config('sguard.auth_server_url'),'/') . '/public/revoked_ids';
+            $url = rtrim(config('sguard.auth_server_url'), '/') . '/public/revoked_ids';
             return json_decode(file_get_contents($url));
         } catch (Throwable $e) {
             return [];
@@ -174,14 +174,12 @@ class JwtAuthDriver implements Guard
             } else {
                 $this->admin = false;
             }
-
         } catch (Throwable $ex) {
             throw new AuthenticationException('Auth error - ' . $ex->getMessage());
         }
 
         return true;
     }
-
 
     /**
      * @return string
