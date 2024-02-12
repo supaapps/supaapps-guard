@@ -228,7 +228,6 @@ class JwtAuthDriver implements Guard
 
     public function role(string $role): array
     {
-        $role = str_replace('/', '\/', $role);
         preg_match("/{$role}/mi", $this->scopes(), $matches);
 
         return $matches;

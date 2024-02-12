@@ -37,7 +37,7 @@ class JwtAuthDriverTest extends TestCase
         ]);
 
         $this->assertEquals($user->id, auth()->id());
-        $this->assertTrue(auth()->hasRole('/root/*'));
+        $this->assertTrue(auth()->hasRole('\/root\/*'));
     }
 
     public function testItReturnsARole(): void
@@ -53,6 +53,6 @@ class JwtAuthDriverTest extends TestCase
         $this->assertEquals([
             '/root/user:1',
             '1',
-        ], auth()->role('/root/user:(\d+(?!\S))'));
+        ], auth()->role('\/root\/user:(\d+(?!\S))'));
     }
 }
