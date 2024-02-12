@@ -185,6 +185,12 @@ class JwtAuthDriver implements Guard
         return true;
     }
 
+    public function setRequest(Request $request)
+    {
+        $this->request = $request;
+
+        return $this;
+    }
 
     /**
      * @return string

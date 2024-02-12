@@ -18,6 +18,10 @@ trait GenerateJwtToken
             'Authorization' => "Bearer {$accessToken}"
         ]);
 
+        auth('jwt')->setRequest(
+            $this->app->refresh('request', auth('jwt'), 'setRequest')
+        );
+
         return $accessToken;
     }
 
