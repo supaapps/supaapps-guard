@@ -181,7 +181,7 @@ class JwtAuthDriver implements Guard
         } catch (Throwable $ex) {
             throw new AuthenticationException('Auth error - ' . $ex->getMessage());
         }
-        
+
         return true;
     }
 
@@ -224,5 +224,18 @@ class JwtAuthDriver implements Guard
     public function scopesArray(): array
     {
         return $this->scopesArray;
+    }
+
+    public function role(string $role): array
+    {
+        $role = str_replace('/', '\/', $role);
+        preg_match("/{$role}/mi", $this->scopes(), $matches);
+
+        return $matches;
+    }
+
+    public function hasRole(string $role): bool
+    {
+        return count($this->role($role)) > 0;
     }
 }
