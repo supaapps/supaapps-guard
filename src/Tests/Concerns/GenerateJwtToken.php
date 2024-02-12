@@ -22,6 +22,8 @@ trait GenerateJwtToken
             $this->app->refresh('request', auth('jwt'), 'setRequest')
         );
 
+        auth('jwt')->setUser($user);
+
         return $accessToken;
     }
 
