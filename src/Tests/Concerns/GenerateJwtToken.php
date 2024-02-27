@@ -4,10 +4,14 @@ namespace Supaapps\Guard\Tests\Concerns;
 
 use Firebase\JWT\JWT;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Foundation\Testing\Concerns\MakesHttpRequests;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 
 trait GenerateJwtToken
 {
+    use MakesHttpRequests;
+
     public function withAccessTokenFor(Authenticatable $user, array $payload = []): string
     {
         $accessToken = $this->generateTestingJwtToken($payload + [
@@ -17,6 +21,14 @@ trait GenerateJwtToken
         request()->headers->add([
             'Authorization' => "Bearer {$accessToken}"
         ]);
+
+        auth('jwt')->setRequest(
+            $this->app->refresh('request', auth('jwt'), 'setRequest')
+        );
+
+        auth('jwt')->setUser($user);
+
+        $this->withToken($accessToken);
 
         return $accessToken;
     }
@@ -41,5 +53,10 @@ trait GenerateJwtToken
             File::get(__DIR__ . '/../../../tests/public/private_key'),
             File::get(__DIR__ . '/../../../tests/public/algo')
         );
+    }
+
+    public function setAuthServerUrl()
+    {
+        Config::set('sguard.auth_server_url', __DIR__ . '/../../../tests');
     }
 }

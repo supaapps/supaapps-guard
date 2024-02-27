@@ -19,6 +19,8 @@ class GuardServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__ . '/../config/sguard.php'
                     => config_path('sguard.php'),
+                __DIR__ . '/../database/migrations'
+                    => database_path('migrations')
             ]);
         }
 
@@ -36,6 +38,4 @@ class GuardServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/sguard.php', 'sguard');
     }
-
-
 }

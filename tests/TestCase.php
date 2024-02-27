@@ -11,7 +11,8 @@ use function Orchestra\Testbench\laravel_migration_path;
 
 class TestCase extends BaseTestCase
 {
-    use RefreshDatabase, GenerateJwtToken;
+    use RefreshDatabase;
+    use GenerateJwtToken;
 
     protected function getPackageProviders($app)
     {
@@ -27,7 +28,8 @@ class TestCase extends BaseTestCase
             'driver' => 'supaapps-guard',
             'provider' => 'users',
         ]);
-        $app['config']->set('sguard.auth_server_url', __DIR__);
+
+        $this->setAuthServerUrl();
 
         $app->afterResolving('migrator', static function ($migrator) {
             $migrator->path(laravel_migration_path());

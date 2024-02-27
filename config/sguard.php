@@ -1,4 +1,5 @@
 <?php
+
 /*
  * supaapps/supaapps-guard package
  */

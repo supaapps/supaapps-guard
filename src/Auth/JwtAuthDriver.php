@@ -13,9 +13,6 @@ use Illuminate\Support\Facades\Cache;
 use stdClass;
 use Throwable;
 
-/**
- *
- */
 class JwtAuthDriver implements Guard
 {
     use GuardHelpers;
@@ -110,7 +107,7 @@ class JwtAuthDriver implements Guard
      */
     public function fetchPublicKey()
     {
-        $url = rtrim(config('sguard.auth_server_url'),'/') . '/public/public_key';
+        $url = rtrim(config('sguard.auth_server_url'), '/') . '/public/public_key';
         return file_get_contents($url);
     }
 
@@ -119,7 +116,7 @@ class JwtAuthDriver implements Guard
      */
     public function fetchAlgo()
     {
-        $url = rtrim(config('sguard.auth_server_url'),'/') . '/public/algo';
+        $url = rtrim(config('sguard.auth_server_url'), '/') . '/public/algo';
         return file_get_contents($url);
     }
 
@@ -129,7 +126,7 @@ class JwtAuthDriver implements Guard
     public function fetchRevokedTokens(): array
     {
         try {
-            $url = rtrim(config('sguard.auth_server_url'),'/') . '/public/revoked_ids';
+            $url = rtrim(config('sguard.auth_server_url'), '/') . '/public/revoked_ids';
             return json_decode(file_get_contents($url));
         } catch (Throwable $e) {
             return [];
@@ -158,7 +155,7 @@ class JwtAuthDriver implements Guard
                 return $this->fetchAlgo();
             });
             $this->jwtPayload = JWT::decode($bearerToken, new Key(trim($publicKey), trim($algorithm)));
-            if ( config('sguard.realm_name') !== $this->jwtPayload->aud) {
+            if (config('sguard.realm_name') !== $this->jwtPayload->aud) {
                 throw new AuthenticationException('Auth error - realm mismatch');
             }
             $revokedIds = Cache::remember('supaapps_jwt/revoked_ids', 15, function () {
@@ -172,19 +169,24 @@ class JwtAuthDriver implements Guard
             $this->email = $this->jwtPayload->email;
             $this->scopesArray = explode(' ', $this->jwtPayload->scopes);
             $this->scopes = $this->jwtPayload->scopes;
-            if (strpos($this->scopes, '/' . config('sguard.realm_name') .'/*') !== false) {
+            if (strpos($this->scopes, '/' . config('sguard.realm_name') . '/*') !== false) {
                 $this->admin = true;
             } else {
                 $this->admin = false;
             }
-
         } catch (Throwable $ex) {
             throw new AuthenticationException('Auth error - ' . $ex->getMessage());
         }
-        
+
         return true;
     }
 
+    public function setRequest(Request $request)
+    {
+        $this->request = $request;
+
+        return $this;
+    }
 
     /**
      * @return string
