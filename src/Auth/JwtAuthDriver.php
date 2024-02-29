@@ -90,11 +90,11 @@ class JwtAuthDriver implements Guard
 
         // retrieve user from db or create a new user by id
         if (is_null($user = $this->provider->retrieveById($this->jwtPayload->sub))) {
-            $user = $this->provider
-                ->createModel()
-                ->create([
-                    'id' => $this->jwtPayload->sub,
-                ]);
+            $model = $this->provider->createModel();
+            $model->forceCreate([
+                'id' => $this->jwtPayload->sub
+            ]);
+            $user = $model->query()->where('id', $this->jwtPayload->sub)->first();
         }
 
         $this->setUser($user);
