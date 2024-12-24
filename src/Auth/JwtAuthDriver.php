@@ -155,7 +155,12 @@ class JwtAuthDriver implements Guard
                 return $this->fetchAlgo();
             });
             $this->jwtPayload = JWT::decode($bearerToken, new Key(trim($publicKey), trim($algorithm)));
-            if (config('sguard.realm_name') !== $this->jwtPayload->aud) {
+            preg_match(
+                pattern: "/^(" . str_replace(',', '|', config('sguard.realm_name')) . ")$/i",
+                subject: $this->jwtPayload->aud,
+                matches: $matches
+            );
+            if (count($matches) < 1) {
                 throw new AuthenticationException('Auth error - realm mismatch');
             }
             $revokedIds = Cache::remember('supaapps_jwt/revoked_ids', 15, function () {
