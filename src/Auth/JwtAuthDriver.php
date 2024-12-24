@@ -160,7 +160,7 @@ class JwtAuthDriver implements Guard
                 subject: $this->jwtPayload->aud,
                 matches: $matches
             );
-            if (count($matches) < 1) {
+            if (count($matches) < 2) {
                 throw new AuthenticationException('Auth error - realm mismatch');
             }
             $revokedIds = Cache::remember('supaapps_jwt/revoked_ids', 15, function () {
