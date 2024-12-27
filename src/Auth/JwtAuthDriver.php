@@ -62,6 +62,7 @@ class JwtAuthDriver implements Guard
      */
     private string $realmName;
 
+    private string $matchRealm;
 
     /**
      * @param EloquentUserProvider|null $provider
@@ -73,13 +74,20 @@ class JwtAuthDriver implements Guard
         $this->request = request();
     }
 
+    public function check($matchRealm = null)
+    {
+        return ! is_null($this->user($matchRealm));
+    }
+
     /**
      * Get the currently authenticated user.
      *
      * @return \Illuminate\Contracts\Auth\Authenticatable|null
      */
-    public function user()
+    public function user($matchRealm = null)
     {
+        $this->matchRealm = $matchRealm ?? config('sguard.realm_name');
+
         if (!$this->validate()) {
             return null;
         }
@@ -155,7 +163,12 @@ class JwtAuthDriver implements Guard
                 return $this->fetchAlgo();
             });
             $this->jwtPayload = JWT::decode($bearerToken, new Key(trim($publicKey), trim($algorithm)));
-            if (config('sguard.realm_name') !== $this->jwtPayload->aud) {
+            preg_match(
+                pattern: "/^(" . $this->matchRealm . ")$/i",
+                subject: $this->jwtPayload->aud,
+                matches: $matches
+            );
+            if (count($matches) != 2) { // 2 matches; all & group
                 throw new AuthenticationException('Auth error - realm mismatch');
             }
             $revokedIds = Cache::remember('supaapps_jwt/revoked_ids', 15, function () {
