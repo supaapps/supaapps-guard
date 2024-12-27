@@ -62,6 +62,7 @@ class JwtAuthDriver implements Guard
      */
     private string $realmName;
 
+    private string $matchRealm;
 
     /**
      * @param EloquentUserProvider|null $provider
@@ -73,13 +74,20 @@ class JwtAuthDriver implements Guard
         $this->request = request();
     }
 
+    public function check($matchRealm = null)
+    {
+        return ! is_null($this->user($matchRealm));
+    }
+
     /**
      * Get the currently authenticated user.
      *
      * @return \Illuminate\Contracts\Auth\Authenticatable|null
      */
-    public function user()
+    public function user($matchRealm = null)
     {
+        $this->matchRealm = $matchRealm ?? config('sguard.realm_name');
+
         if (!$this->validate()) {
             return null;
         }
@@ -156,7 +164,7 @@ class JwtAuthDriver implements Guard
             });
             $this->jwtPayload = JWT::decode($bearerToken, new Key(trim($publicKey), trim($algorithm)));
             preg_match(
-                pattern: "/^(" . str_replace(',', '|', config('sguard.realm_name')) . ")$/i",
+                pattern: "/^(" . $this->matchRealm . ")$/i",
                 subject: $this->jwtPayload->aud,
                 matches: $matches
             );
