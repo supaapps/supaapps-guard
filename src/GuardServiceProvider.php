@@ -5,6 +5,7 @@ namespace Supaapps\Guard;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
+use Supaapps\Guard\Auth\DynamicJwtAuthDriver;
 use Supaapps\Guard\Auth\JwtAuthDriver;
 
 class GuardServiceProvider extends ServiceProvider
@@ -26,6 +27,12 @@ class GuardServiceProvider extends ServiceProvider
 
         Auth::extend('supaapps-guard', function (Application $app, string $name, array $config) {
             return new JwtAuthDriver(
+                Auth::createUserProvider($config['provider'])
+            );
+        });
+
+        Auth::extend('supaapps-dynamic-guard', function (Application $app, string $name, array $config) {
+            return new DynamicJwtAuthDriver(
                 Auth::createUserProvider($config['provider'])
             );
         });
